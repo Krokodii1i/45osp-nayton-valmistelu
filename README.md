@@ -1,0 +1,1 @@
+# 45osp-nayton-valmistelu
