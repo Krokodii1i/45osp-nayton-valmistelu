@@ -3,15 +3,15 @@
 
 let noise = 0
 let light2 = 0
-led.enable(false)
-let strip = neopixel.create(DigitalPin.P1, 1, NeoPixelMode.RGB)
+led.enable(false)    #Kytkee ledin päälle / pois
+let strip = neopixel.create(DigitalPin.P1, 1, NeoPixelMode.RGB)    #Ohjaa Neopixel stirppiä
 basic.forever(function () {
-    light2 = smarthome.ReadLightIntensity(AnalogPin.P3)
-    if (light2 < 50) {
+    light2 = smarthome.ReadLightIntensity(AnalogPin.P3)    #TODO: get light intensity(0~100%)
+    if (light2 < 50) {    
         noise = smarthome.ReadNoise(AnalogPin.P2)
         if (noise > 70) {
-            strip.showColor(neopixel.colors(NeoPixelColors.White))
-            basic.pause(10000)
+            strip.showColor(neopixel.colors(NeoPixelColors.White))    #Jos ääni isompi kuin 70 laita valo päälle
+            basic.pause(10000)    #Kun ääni loppunut odota 10sec ja sammuta valo
             strip.showColor(neopixel.colors(NeoPixelColors.Black))
         }
     }
@@ -20,28 +20,30 @@ basic.forever(function () {
 SMART FAN
 
 let temp = 0
-OLED.init(128, 64)
+OLED.init(64, 128)
 basic.forever(function () {
-    temp = smarthome.ReadTemperature(TMP36Type.TMP36_temperature_C, AnalogPin.P1)
+    temp = smarthome.ReadTemperature(TMP36Type.TMP36_temperature_C, AnalogPin.P2)    #Lue temperature arvossa C
     OLED.clear()
-    OLED.writeString("temperature")
-    OLED.writeNum(temp)
-    if (temp > 30) {
+    OLED.writeString("Temperature:")    #Kirjoita näytölle " Temperature: "
+    OLED.writeNum(temp)    #Kirjoita lämpötila " Temperature: " perään
+    if (temp > 29) {
         basic.showLeds(`
-            # # . # #
+            . # . # .
             # . # . #
             # . . . #
-            . # # # .
+            . # . # .
             . . # . .
-            `)
+            `)    #Jos lämpötila yli 29C näytä led kuvio
+        music.startMelody(music.builtInMelody(Melodies.BaDing), MelodyOptions.Once)
         pins.digitalWritePin(DigitalPin.P1, 1)
-        basic.pause(5000)
+        basic.pause(5000)    #tauko 5sec
         pins.digitalWritePin(DigitalPin.P1, 0)
-        basic.pause(500)
+        basic.pause(500)    #tauko 0,5 sec
     } else {
         pins.digitalWritePin(DigitalPin.P1, 0)
     }
 })
+
 
 AUTO WINDOWS
 
@@ -49,14 +51,15 @@ let noise = 0
 pins.servoWritePin(AnalogPin.P1, 0)
 basic.forever(function () {
     noise = smarthome.ReadNoise(AnalogPin.P10)
-    if (noise > 30) {
+    if (noise > 50) {
         pins.servoWritePin(AnalogPin.P1, 0)
         basic.pause(2000)
     } else {
         pins.servoWritePin(AnalogPin.P1, 100)
-        basic.pause(500)
+        basic.pause(2000)
     }
 })
+
 
 AUTOMAATTINEN VAATEKAAPPI
 
